@@ -1,0 +1,482 @@
+{
+  "metros_totais": 47.16,
+  "tons": {
+    "tom 1": {
+      "tamanhos": [
+        "334",
+        "35",
+        "36",
+        "40",
+        "42",
+        "434",
+        "45"
+      ],
+      "cortes": [
+        {
+          "componente": "gaspea_interna",
+          "fileira": "5x40  (larg. 137.75 cm)",
+          "esquerda": null,
+          "metros": 2.36,
+          "fileiras_aprox": 12.7,
+          "consumo_pares_m": {
+            "40": 26.68
+          }
+        },
+        {
+          "componente": "gaspea_interna",
+          "fileira": "4x45  (larg. 121.60 cm)",
+          "esquerda": null,
+          "metros": 1.81,
+          "fileiras_aprox": 9.0,
+          "consumo_pares_m": {
+            "45": 19.72
+          }
+        },
+        {
+          "componente": "gaspea_interna",
+          "fileira": "2x334 + 3x42  (larg. 136.34 cm)",
+          "esquerda": null,
+          "metros": 4.27,
+          "fileiras_aprox": 21.7,
+          "consumo_pares_m": {
+            "334": 10.05,
+            "42": 15.08
+          }
+        },
+        {
+          "componente": "gaspea_interna",
+          "fileira": "1x334 + 3x434  (larg. 113.86 cm)",
+          "esquerda": null,
+          "metros": 0.02,
+          "fileiras_aprox": 0.1,
+          "consumo_pares_m": {
+            "334": 4.97,
+            "434": 14.93
+          }
+        },
+        {
+          "componente": "gaspea_interna",
+          "fileira": "1x35 + 4x36  (larg. 125.41 cm)",
+          "esquerda": null,
+          "metros": 0.05,
+          "fileiras_aprox": 0.3,
+          "consumo_pares_m": {
+            "35": 5.74,
+            "36": 22.96
+          }
+        },
+        {
+          "componente": "gaspea_interna",
+          "fileira": "2x35 + 3x36  (larg. 125.07 cm)",
+          "esquerda": null,
+          "metros": 0.01,
+          "fileiras_aprox": 0.1,
+          "consumo_pares_m": {
+            "35": 11.48,
+            "36": 17.22
+          }
+        },
+        {
+          "componente": "gaspea_interna",
+          "fileira": "2x35 + 3x42  (larg. 137.46 cm)",
+          "esquerda": null,
+          "metros": 2.15,
+          "fileiras_aprox": 10.9,
+          "consumo_pares_m": {
+            "35": 10.05,
+            "42": 15.08
+          }
+        },
+        {
+          "componente": "gaspea_interna",
+          "fileira": "3x35 + 2x42  (larg. 132.99 cm)",
+          "esquerda": null,
+          "metros": 0.02,
+          "fileiras_aprox": 0.1,
+          "consumo_pares_m": {
+            "35": 15.08,
+            "42": 10.05
+          }
+        },
+        {
+          "componente": "gaspea_interna",
+          "fileira": "3x35 + 2x434  (larg. 134.17 cm)",
+          "esquerda": null,
+          "metros": 2.19,
+          "fileiras_aprox": 11.0,
+          "consumo_pares_m": {
+            "35": 14.93,
+            "434": 9.95
+          }
+        },
+        {
+          "componente": "gaspea_interna",
+          "fileira": "3x36 + 2x434  (larg. 135.19 cm)",
+          "esquerda": null,
+          "metros": 3.11,
+          "fileiras_aprox": 15.6,
+          "consumo_pares_m": {
+            "36": 14.93,
+            "434": 9.95
+          }
+        },
+        {
+          "componente": "gaspea_interna",
+          "fileira": "3x36 + 2x45  (larg. 136.25 cm)",
+          "esquerda": null,
+          "metros": 0.83,
+          "fileiras_aprox": 4.1,
+          "consumo_pares_m": {
+            "36": 14.79,
+            "45": 9.86
+          }
+        },
+        {
+          "componente": "gaspea_interna",
+          "fileira": "1x40 + 3x45  (larg. 118.75 cm)",
+          "esquerda": null,
+          "metros": 0.01,
+          "fileiras_aprox": 0.0,
+          "consumo_pares_m": {
+            "40": 4.93,
+            "45": 14.79
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "5x334  (larg. 118.70 cm)",
+          "esquerda": null,
+          "metros": 0.39,
+          "fileiras_aprox": 2.7,
+          "consumo_pares_m": {
+            "334": 34.2
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "5x35  (larg. 121.65 cm)",
+          "esquerda": null,
+          "metros": 0.37,
+          "fileiras_aprox": 2.5,
+          "consumo_pares_m": {
+            "35": 33.56
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "5x40  (larg. 135.25 cm)",
+          "esquerda": null,
+          "metros": 2.01,
+          "fileiras_aprox": 12.6,
+          "consumo_pares_m": {
+            "40": 30.93
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "3x334 + 2x42  (larg. 128.64 cm)",
+          "esquerda": null,
+          "metros": 0.02,
+          "fileiras_aprox": 0.1,
+          "consumo_pares_m": {
+            "334": 17.7,
+            "42": 11.8
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "2x334 + 3x45  (larg. 137.06 cm)",
+          "esquerda": null,
+          "metros": 2.56,
+          "fileiras_aprox": 14.8,
+          "consumo_pares_m": {
+            "334": 11.46,
+            "45": 17.19
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "2x35 + 3x36  (larg. 122.88 cm)",
+          "esquerda": null,
+          "metros": 0.01,
+          "fileiras_aprox": 0.1,
+          "consumo_pares_m": {
+            "35": 13.26,
+            "36": 19.89
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "3x35 + 2x36  (larg. 122.47 cm)",
+          "esquerda": null,
+          "metros": 0.03,
+          "fileiras_aprox": 0.2,
+          "consumo_pares_m": {
+            "35": 19.89,
+            "36": 13.26
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "4x35 + 1x36  (larg. 122.06 cm)",
+          "esquerda": null,
+          "metros": 0.03,
+          "fileiras_aprox": 0.2,
+          "consumo_pares_m": {
+            "35": 26.53,
+            "36": 6.63
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "2x35 + 3x40  (larg. 129.81 cm)",
+          "esquerda": null,
+          "metros": 0.01,
+          "fileiras_aprox": 0.1,
+          "consumo_pares_m": {
+            "35": 12.37,
+            "40": 18.56
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "2x35 + 3x42  (larg. 134.79 cm)",
+          "esquerda": null,
+          "metros": 3.41,
+          "fileiras_aprox": 20.3,
+          "consumo_pares_m": {
+            "35": 11.8,
+            "42": 17.7
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "3x35 + 2x42  (larg. 130.41 cm)",
+          "esquerda": null,
+          "metros": 0.01,
+          "fileiras_aprox": 0.1,
+          "consumo_pares_m": {
+            "35": 17.7,
+            "42": 11.8
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "4x35 + 1x42  (larg. 126.03 cm)",
+          "esquerda": null,
+          "metros": 0.01,
+          "fileiras_aprox": 0.1,
+          "consumo_pares_m": {
+            "35": 23.6,
+            "42": 5.9
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "3x35 + 2x434  (larg. 131.51 cm)",
+          "esquerda": null,
+          "metros": 0.02,
+          "fileiras_aprox": 0.1,
+          "consumo_pares_m": {
+            "35": 17.43,
+            "434": 11.62
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "2x36 + 3x42  (larg. 135.61 cm)",
+          "esquerda": null,
+          "metros": 2.03,
+          "fileiras_aprox": 12.1,
+          "consumo_pares_m": {
+            "36": 11.8,
+            "42": 17.7
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "2x36 + 3x434  (larg. 137.26 cm)",
+          "esquerda": null,
+          "metros": 3.02,
+          "fileiras_aprox": 17.7,
+          "consumo_pares_m": {
+            "36": 11.62,
+            "434": 17.43
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "3x36 + 2x434  (larg. 132.74 cm)",
+          "esquerda": null,
+          "metros": 0.01,
+          "fileiras_aprox": 0.1,
+          "consumo_pares_m": {
+            "36": 17.43,
+            "434": 11.62
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "4x40 + 1x42  (larg. 136.91 cm)",
+          "esquerda": null,
+          "metros": 0.03,
+          "fileiras_aprox": 0.2,
+          "consumo_pares_m": {
+            "40": 23.6,
+            "42": 5.9
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "3x42 + 1x434  (larg. 115.39 cm)",
+          "esquerda": null,
+          "metros": 0.01,
+          "fileiras_aprox": 0.1,
+          "consumo_pares_m": {
+            "42": 17.43,
+            "434": 5.81
+          }
+        }
+      ],
+      "producao_pares": {
+        "gaspea_interna": {
+          "334": 43.01,
+          "35": 55.01,
+          "36": 60.03,
+          "40": 63.01,
+          "42": 97.01,
+          "434": 53.03,
+          "45": 44.02
+        },
+        "gaspea_externa": {
+          "334": 43.03,
+          "35": 55.07,
+          "36": 60.02,
+          "40": 63.06,
+          "42": 97.05,
+          "434": 53.05,
+          "45": 44.01
+        }
+      },
+      "metros_usados": 30.81,
+      "metros_disponiveis": 40.8
+    },
+    "tom 2": {
+      "tamanhos": [
+        "378",
+        "39",
+        "41"
+      ],
+      "cortes": [
+        {
+          "componente": "gaspea_interna",
+          "fileira": "5x39  (larg. 136.00 cm)",
+          "esquerda": null,
+          "metros": 0.95,
+          "fileiras_aprox": 5.2,
+          "consumo_pares_m": {
+            "39": 26.87
+          }
+        },
+        {
+          "componente": "gaspea_interna",
+          "fileira": "2x378 + 3x39  (larg. 134.86 cm)",
+          "esquerda": null,
+          "metros": 0.52,
+          "fileiras_aprox": 2.8,
+          "consumo_pares_m": {
+            "378": 10.75,
+            "39": 16.12
+          }
+        },
+        {
+          "componente": "gaspea_interna",
+          "fileira": "2x378 + 3x41  (larg. 136.90 cm)",
+          "esquerda": null,
+          "metros": 5.14,
+          "fileiras_aprox": 27.5,
+          "consumo_pares_m": {
+            "378": 10.59,
+            "41": 15.88
+          }
+        },
+        {
+          "componente": "gaspea_interna",
+          "fileira": "3x39 + 2x41  (larg. 137.36 cm)",
+          "esquerda": null,
+          "metros": 2.21,
+          "fileiras_aprox": 11.8,
+          "consumo_pares_m": {
+            "39": 15.88,
+            "41": 10.59
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "5x378  (larg. 130.40 cm)",
+          "esquerda": null,
+          "metros": 1.88,
+          "fileiras_aprox": 12.1,
+          "consumo_pares_m": {
+            "378": 31.72
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "5x39  (larg. 133.25 cm)",
+          "esquerda": null,
+          "metros": 2.21,
+          "fileiras_aprox": 14.0,
+          "consumo_pares_m": {
+            "39": 31.28
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "5x41  (larg. 137.40 cm)",
+          "esquerda": null,
+          "metros": 3.38,
+          "fileiras_aprox": 20.9,
+          "consumo_pares_m": {
+            "41": 30.64
+          }
+        },
+        {
+          "componente": "gaspea_externa",
+          "fileira": "1x378 + 4x41  (larg. 136.00 cm)",
+          "esquerda": null,
+          "metros": 0.06,
+          "fileiras_aprox": 0.4,
+          "consumo_pares_m": {
+            "378": 6.12,
+            "41": 24.51
+          }
+        }
+      ],
+      "producao_pares": {
+        "gaspea_interna": {
+          "378": 60.02,
+          "39": 69.0,
+          "41": 105.03
+        },
+        "gaspea_externa": {
+          "378": 60.0,
+          "39": 69.13,
+          "41": 105.03
+        }
+      },
+      "metros_usados": 16.35,
+      "metros_disponiveis": 24.7
+    },
+    "tom 3": {
+      "tamanhos": [],
+      "cortes": [],
+      "producao_pares": {
+        "gaspea_interna": {},
+        "gaspea_externa": {}
+      },
+      "metros_usados": 0.0,
+      "metros_disponiveis": 9.99
+    }
+  }
+}
