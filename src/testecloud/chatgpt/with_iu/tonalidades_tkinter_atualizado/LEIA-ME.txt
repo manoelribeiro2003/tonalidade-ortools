@@ -1,0 +1,44 @@
+INTERFACE TKINTER — PROJETO TONALIDADES
+
+ARQUIVOS
+- tonalidades_tkinter.py: interface gráfica.
+- divisao_tonalidades_ergonomico.py: motor de otimização, chamado pela função resolver(configuracao).
+
+Não é necessário nenhum arquivo de perfil ou JSON de exemplo para iniciar o aplicativo. A tela abre com uma linha ilustrativa em cada tabela, preenchida diretamente no código; edite ou exclua os valores antes de executar a otimização. O aplicativo não carrega dados de exemplo de arquivo JSON.
+
+REQUISITOS
+- Python 3.10 ou superior (use uma versão compatível com a instalação do OR-Tools).
+- Google OR-Tools.
+- openpyxl para exportação Excel.
+
+INSTALAÇÃO (Windows / CMD ou PowerShell)
+1. Abra o terminal nesta pasta.
+2. Instale as dependências, caso ainda não estejam instaladas:
+   python -m pip install ortools openpyxl
+3. Execute:
+   python tonalidades_tkinter.py
+
+COMO USAR
+- Demanda por tamanho: informe tamanho e quantidade de pares.
+- Navalhas: informe componente, tamanho, largura, comprimento e pares por batida. Cada componente/tamanho solicitado precisa ter uma navalha cadastrada.
+- Estoque do almoxarifado: informe cada tonalidade e seu estoque em metros.
+- Parâmetros de corte: ajuste largura da mesa, margem, perda por trocas, folga entre navalhas e acréscimos de comprimento.
+- Dê duplo clique em uma célula para editar. Use Adicionar linha e Excluir selecionada(s) para alterar as tabelas.
+- Para colar dados copiados do Excel, clique na tabela desejada e pressione Ctrl+V. As colunas devem estar na mesma ordem da tabela; cada linha copiada será acrescentada ao final, sem apagar nem substituir os dados existentes.
+- Clique em Executar otimização para calcular e abrir o relatório.
+- Salvar trabalho grava em um único arquivo JSON os dados de entrada, parâmetros, configuração exata usada na otimização e o resultado (quando disponível).
+- Restaurar trabalho permite selecionar um arquivo salvo. Se houver resultado, a interface restaura a configuração que produziu aquele resultado.
+- Exportar resultado JSON salva somente o resultado retornado pelo otimizador.
+- Exportar planilha Excel cria a sequência de corte por tonalidade e componente, com colunas BAT., NÚM., POS. e MED. A coluna MED. contém uma fórmula Excel que calcula a soma (quantidade de navalhas × largura cadastrada) + (quantidade total de navalhas - 1) × folga entre navalhas. A base de larguras fica em uma aba auxiliar oculta; o comentário da célula MED. mostra a fórmula geral e a conta específica do padrão. As repetições longitudinais e o comprimento por padrão ficam no comentário da célula da sequência.
+
+OBSERVAÇÕES
+- O algoritmo atual considera os componentes gaspea_interna e gaspea_externa (ou outros nomes cadastrados na tabela), não possui encaixe geométrico de navalhas e combina no máximo dois tamanhos por campanha.
+- O percentual de perda por trocas deve ser um número inteiro, como 1 ou 2.
+- Os pares por batida precisam ser múltiplos de 0,5, conforme a validação do algoritmo.
+- O estoque de cada tonalidade é compartilhado entre os componentes e cada tamanho recebe uma única tonalidade para os dois componentes.
+EXCLUIR LINHAS DAS TABELAS
+- Selecione uma ou mais linhas na tabela e pressione Delete para excluí-las.
+- Também é possível usar o botão "Excluir selecionada(s)".
+- A tecla Delete atua somente na tabela que está com o foco.
+
+- A colagem com Ctrl+V (ou Shift+Insert) acrescenta as linhas copiadas do Excel abaixo dos registros existentes; ela nunca substitui linhas já cadastradas.

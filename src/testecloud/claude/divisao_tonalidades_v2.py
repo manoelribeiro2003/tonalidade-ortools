@@ -23,6 +23,9 @@ Suposições provisórias (marcadas com [SUPOSIÇÃO])
 - A demanda é "pelo menos" (produção >= pares pedidos), porque o consumo é uma
   média em pares/m. O excedente é reportado no resultado.
 - Rotação de 90 graus e divisão de um tamanho entre tons ficam de fora por enquanto.
+- Por decisão atual, o código NÃO planeja batidas inteiras para fechar a produção exata:
+  ele aproveita as larguras por combinação e controla a produção pelo consumo (pares/m).
+  Prever combinações e nº de batidas para x pares fica para um modelo futuro.
 
 Os dados abaixo são EXEMPLOS: substitua pelos reais.
 
@@ -39,20 +42,29 @@ from itertools import combinations, product
 # 1) PARÂMETROS GERAIS
 # ---------------------------------------------------------------------------
 
-ESCALA = 100                      # cm -> centésimos de cm (tudo em inteiros)
-METRO = 100 * ESCALA              # 1 metro em centésimos de cm
+ESCALA = 100  # cm -> centésimos de cm (tudo em inteiros)
+METRO = 100 * ESCALA  # 1 metro em centésimos de cm
 
 
 def cm(valor: float) -> int:
     return round(valor * ESCALA)
 
 
+def componentes_por_batida(pares: float) -> int:
+    """Converte 'pares por batida' em componentes (1 par = 2 componentes).
+    0.5 -> 1 componente por batida | 1 -> 1 par (2 componentes) | 2 -> 2 pares (4 componentes)."""
+    comp = round(pares * 2)
+    if comp < 1 or abs(comp - pares * 2) > 1e-9:
+        raise ValueError(f"'pares' deve ser múltiplo de 0,5 (recebido: {pares})")
+    return comp
+
+
 LARGURA_MESA = cm(139.0)
-MARGEM_SEGURANCA = cm(1.0)        # regra prioritária: fileira de 139 é inválida, até 138 vale
-FOLGA_ENTRE_NAVALHAS = cm(0.0)    # não é regra absoluta; 0 por padrão
-ACRESCIMO_COMPRIMENTO = cm(0.4)   # planilha: 0,4 cm (0,3 cm na navalha quadrada)
-PERC_TROCAS = 1                   # % de perda por trocas (planilha: 1%; versões antigas 2%; meia 5%)
-MAX_TAMANHOS_POR_FILEIRA = 2      # por enquanto combinamos até dois tamanhos
+MARGEM_SEGURANCA = cm(1.0)  # regra prioritária: fileira de 139 é inválida, até 138 vale
+FOLGA_ENTRE_NAVALHAS = cm(0.0)  # não é regra absoluta; 0 por padrão
+ACRESCIMO_COMPRIMENTO = cm(0.4)  # planilha: 0,4 cm (0,3 cm na navalha quadrada)
+PERC_TROCAS = 1  # % de perda por trocas (planilha: 1%; versões antigas 2%; meia 5%)
+MAX_TAMANHOS_POR_FILEIRA = 2  # por enquanto combinamos até dois tamanhos
 TEMPO_LIMITE_S = 60
 
 # ---------------------------------------------------------------------------
@@ -60,15 +72,22 @@ TEMPO_LIMITE_S = 60
 # ---------------------------------------------------------------------------
 
 # O encaixe é propriedade do TIPO: vale para todos os tamanhos daquele tipo.
+# TIPOS = {
+#     "cabedal": {"encaixe": True},
+#     "lingueta": {"encaixe": False, "acrescimo_comprimento": cm(0.3)},
+# }
+
 TIPOS = {
-    "cabedal":  {"encaixe": True},
-    "lingueta": {"encaixe": False, "acrescimo_comprimento": cm(0.3)},
+    "gaspea_interna": {"encaixe": False, "acrescimo_comprimento": cm(0.3)},
+    "gaspea_externa": {"encaixe": False, "acrescimo_comprimento": cm(0.3)},
 }
 
 
 def navalha(largura1, comprimento1, pares=1, largura2=None, comprimento2=None):
-    """largura2: só para tipos de encaixe (largura quando encaixada à esquerda).
+    """pares: pares por batida (1 = 1 par = 2 componentes | 0.5 = 1 componente | 2 = 2 pares).
+    largura2: só para tipos de encaixe (largura quando encaixada à esquerda).
     comprimento2: só se houver encaixe também no comprimento (como na planilha)."""
+    componentes_por_batida(pares)  # valida: precisa ser múltiplo de 0,5
     return {
         "largura1": cm(largura1),
         "largura2": cm(largura2) if largura2 is not None else cm(largura1),
@@ -81,26 +100,56 @@ def navalha(largura1, comprimento1, pares=1, largura2=None, comprimento2=None):
 # chave = (tipo, tamanho)
 NAVALHAS = {
     # cabedal (encaixe)
-    ("cabedal", "334"): navalha(17.42, 13.23, 1, largura2=16.62),
-    ("cabedal", "35"):  navalha(17.70, 13.50, 1, largura2=16.80),
-    ("cabedal", "394"): navalha(19.00, 14.94, 1, largura2=18.12),
+    # ("cabedal", "334"): navalha(17.42, 13.23, 1, largura2=16.62),
+    # ("cabedal", "35"): navalha(17.70, 13.50, 1, largura2=16.80),
+    # ("cabedal", "394"): navalha(19.00, 14.94, 1, largura2=18.12),
     # lingueta (sem encaixe, largura única)
-    ("lingueta", "334"): navalha(17.4, 18.5, 3),
-    ("lingueta", "35"):  navalha(17.8, 18.9, 3),
-    ("lingueta", "394"): navalha(19.5, 20.3, 3),
+    ("gaspea_interna", "334"): navalha(24.25, 16.59, 1),
+    ("gaspea_interna", "35"): navalha(24.81, 16.79, 1),
+    ("gaspea_interna", "36"): navalha(25.15, 16.93, 1),
+    ("gaspea_interna", "378"): navalha(26.63, 17.89, 1),
+    ("gaspea_interna", "39"): navalha(27.2, 18.09, 1),
+    ("gaspea_interna", "40"): navalha(27.55, 18.24, 1),
+    ("gaspea_interna", "41"): navalha(27.88, 18.39, 1),
+    ("gaspea_interna", "42"): navalha(29.28, 19.35, 1),
+    ("gaspea_interna", "434"): navalha(29.87, 19.56, 1),
+    ("gaspea_interna", "45"): navalha(30.4, 19.78, 1),
+    ("gaspea_externa", "334"): navalha(23.74, 14.17, 1),
+    ("gaspea_externa", "35"): navalha(24.33, 14.44, 1),
+    ("gaspea_externa", "36"): navalha(24.74, 14.61, 1),
+    ("gaspea_externa", "378"): navalha(26.08, 15.28, 1),
+    ("gaspea_externa", "39"): navalha(26.65, 15.51, 1),
+    ("gaspea_externa", "40"): navalha(27.05, 15.7, 1),
+    ("gaspea_externa", "41"): navalha(27.48, 15.85, 1),
+    ("gaspea_externa", "42"): navalha(28.71, 16.46, 1),
+    ("gaspea_externa", "434"): navalha(29.26, 16.71, 1),
+    ("gaspea_externa", "45"): navalha(29.86, 16.97, 1),
 }
 
 # Ordem de produção: pares por tamanho e componentes do calçado
-PARES_POR_TAMANHO = {"334": 20, "35": 40, "394": 60}
-COMPONENTES = ["cabedal", "lingueta"]
+# PARES_POR_TAMANHO = {"334": 20, "35": 40, "394": 60}
+PARES_POR_TAMANHO = {
+                    "334": 43, 
+                     "35": 55, 
+                     "36": 60,
+                     "378": 60,
+                     "39": 69,
+                     "40": 63,
+                     "41": 105,
+                     "42": 97,
+                     "434": 53,
+                     "45": 44
+                     }
+COMPONENTES = ["gaspea_interna", "gaspea_externa"]
 
 # Reserva do almoxarifado por tom (em metros)
-TONS_METROS = {"tom 1": 2.0, "tom 2": 1.5, "tom 3": 0.6}
+TONS_METROS = {"tom 1": 40.8, "tom 2": 24.7, "tom 3": 9.99}
 
 
 # ---------------------------------------------------------------------------
 # 3) FÓRMULAS DA PLANILHA (funções puras, todas em inteiros)
 # ---------------------------------------------------------------------------
+
 
 def batidas_largura_encaixe(largura1: int, largura2: int, largura_seq: int) -> int:
     """Planilha: ROUNDDOWN((Larg.Seq - Larg1) / Larg2 + 1, 0)."""
@@ -119,15 +168,20 @@ def fileiras_por_metro_simples_100(comprimento: int, acrescimo: int) -> int:
     return (100 * METRO) // (comprimento + acrescimo)
 
 
-def consumo_100(batidas: int, pares: int, fileiras_metro_100: int, perc_trocas: int) -> int:
+def consumo_100(
+    batidas: int, pares: float, fileiras_metro_100: int, perc_trocas: int
+) -> int:
     """Consumo em CENTÉSIMOS de pares/m: batidas x pares/nav x fileiras/m x (100-% trocas)/100.
+    Cálculo em inteiros (via componentes) para o CP-SAT aceitar os coeficientes.
     [SUPOSIÇÃO para fileiras com mais de um tamanho: ver cabeçalho.]"""
-    return batidas * pares * fileiras_metro_100 * (100 - perc_trocas) // 100
+    comp = componentes_por_batida(pares)
+    return batidas * comp * fileiras_metro_100 * (100 - perc_trocas) // 200
 
 
 # ---------------------------------------------------------------------------
 # 4) GERAÇÃO DAS FILEIRAS (geometria)
 # ---------------------------------------------------------------------------
+
 
 def _nav(tipo, tamanho):
     return NAVALHAS[(tipo, tamanho)]
@@ -142,7 +196,8 @@ def largura_fileira(tipo: str, contagem: dict):
     if TIPOS[tipo]["encaixe"]:
         soma_l2 = sum(n * _nav(tipo, t)["largura2"] for t, n in contagem.items())
         primeiro = min(
-            contagem, key=lambda t: _nav(tipo, t)["largura1"] - _nav(tipo, t)["largura2"]
+            contagem,
+            key=lambda t: _nav(tipo, t)["largura1"] - _nav(tipo, t)["largura2"],
         )
         ganho = _nav(tipo, primeiro)["largura1"] - _nav(tipo, primeiro)["largura2"]
         return soma_l2 + ganho + folgas, primeiro
@@ -164,7 +219,8 @@ def gerar_fileiras(tipo: str, tamanhos: list) -> list:
     limite = LARGURA_MESA - MARGEM_SEGURANCA
     encaixe = TIPOS[tipo]["encaixe"]
     menor = min(
-        (_nav(tipo, t)["largura2"] if encaixe else _nav(tipo, t)["largura1"]) for t in tamanhos
+        (_nav(tipo, t)["largura2"] if encaixe else _nav(tipo, t)["largura1"])
+        for t in tamanhos
     )
     max_bat = limite // menor + 1
 
@@ -205,12 +261,15 @@ def validar_dados() -> None:
             assert (tipo, tam) in NAVALHAS, f"Falta a navalha {tipo} {tam}"
             n = NAVALHAS[(tipo, tam)]
             if TIPOS[tipo]["encaixe"]:
-                assert n["largura2"] <= n["largura1"], f"Largura 2 deve ser <= largura 1 ({tipo} {tam})"
+                assert n["largura2"] <= n["largura1"], (
+                    f"Largura 2 deve ser <= largura 1 ({tipo} {tam})"
+                )
 
 
 # ---------------------------------------------------------------------------
 # 5) OTIMIZAÇÃO (CP-SAT)
 # ---------------------------------------------------------------------------
+
 
 def resolver():
     from ortools.sat.python import cp_model  # import tardio: o resto roda sem ortools
@@ -244,7 +303,10 @@ def resolver():
 
     for t in tons:
         # metragem do tom (componentes diferentes cortam trechos diferentes: os metros se somam)
-        model.add(sum(m[k, j, t] for k in COMPONENTES for j in range(len(fileiras[k]))) <= cap[t])
+        model.add(
+            sum(m[k, j, t] for k in COMPONENTES for j in range(len(fileiras[k])))
+            <= cap[t]
+        )
 
         # demanda: pares(x10000) = consumo100 (centi-pares/m) x centímetros
         for k in COMPONENTES:
@@ -264,7 +326,9 @@ def resolver():
     status = solver.solve(model)
     print(f"Status: {solver.status_name(status)}")
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-        print("Sem solução viável: revise a metragem dos tons, a demanda ou as navalhas.")
+        print(
+            "Sem solução viável: revise a metragem dos tons, a demanda ou as navalhas."
+        )
         return None
     if status == cp_model.FEASIBLE:
         print("Atenção: solução viável, mas NÃO provada ótima (tempo esgotado).")
@@ -277,6 +341,7 @@ def resolver():
 # ---------------------------------------------------------------------------
 # 6) RESULTADO + VALIDAÇÃO INDEPENDENTE
 # ---------------------------------------------------------------------------
+
 
 def montar_resultado(fileiras, valores, atribuicao, tons, cap) -> dict:
     resultado = {"metros_totais": 0.0, "tons": {}}
@@ -298,8 +363,12 @@ def montar_resultado(fileiras, valores, atribuicao, tons, cap) -> dict:
                         "fileira": descrever(f),
                         "esquerda": f["esquerda"],
                         "metros": cm_cortados / 100,
-                        "fileiras_aprox": round(cm_cortados / 100 * f["fileiras_metro_100"] / 100, 1),
-                        "consumo_pares_m": {s: v / 100 for s, v in f["consumo100"].items()},
+                        "fileiras_aprox": round(
+                            cm_cortados / 100 * f["fileiras_metro_100"] / 100, 1
+                        ),
+                        "consumo_pares_m": {
+                            s: v / 100 for s, v in f["consumo100"].items()
+                        },
                     }
                 )
                 for s, c100 in f["consumo100"].items():
@@ -310,12 +379,16 @@ def montar_resultado(fileiras, valores, atribuicao, tons, cap) -> dict:
         assert usado_cm <= cap[t], f"Metragem estourada em {t}"
         for k in COMPONENTES:
             for s in tamanhos_t:
-                assert producao[k][s] + 1e-9 >= PARES_POR_TAMANHO[s], f"Demanda não atendida: {k} {s} em {t}"
+                assert producao[k][s] + 1e-9 >= PARES_POR_TAMANHO[s], (
+                    f"Demanda não atendida: {k} {s} em {t}"
+                )
 
         resultado["tons"][t] = {
             "tamanhos": tamanhos_t,
             "cortes": cortes,
-            "producao_pares": {k: {s: round(v, 2) for s, v in d.items()} for k, d in producao.items()},
+            "producao_pares": {
+                k: {s: round(v, 2) for s, v in d.items()} for k, d in producao.items()
+            },
             "metros_usados": usado_cm / 100,
             "metros_disponiveis": cap[t] / 100,
         }
@@ -329,15 +402,20 @@ def imprimir(resultado: dict) -> None:
         print(f"== {t}: tamanhos {', '.join(d['tamanhos']) or '(nenhum)'} ==")
         for c in d["cortes"]:
             cons = ", ".join(f"{s}: {v:.2f}" for s, v in c["consumo_pares_m"].items())
-            print(f"  [{c['componente']}] {c['fileira']}  -> {c['metros']:.2f} m (~{c['fileiras_aprox']} fileiras)")
+            print(
+                f"  [{c['componente']}] {c['fileira']}  -> {c['metros']:.2f} m (~{c['fileiras_aprox']} fileiras)"
+            )
             print(f"      consumo (pares/m): {cons}")
         print(f"  Produção (pares): {d['producao_pares']}")
-        print(f"  Tecido: {d['metros_usados']:.2f} m de {d['metros_disponiveis']:.2f} m\n")
+        print(
+            f"  Tecido: {d['metros_usados']:.2f} m de {d['metros_disponiveis']:.2f} m\n"
+        )
 
 
 # ---------------------------------------------------------------------------
 # 7) AUTOTESTE: reproduz resultados que estão na planilha
 # ---------------------------------------------------------------------------
+
 
 def autoteste() -> None:
     # aba "calculo nav.encaixe", bloco 1: resultado 29 pares/m
@@ -359,9 +437,20 @@ def autoteste() -> None:
     assert (bat_q, fpm_q) == (3, 531), (bat_q, fpm_q)
     assert consumo_100(bat_q, 3, fpm_q, 1) == 4731
 
+    # pares por batida fracionado: 0,5 par (1 componente) rende metade de 1 par
+    assert componentes_por_batida(0.5) == 1 and componentes_por_batida(1) == 2
+    assert consumo_100(6, 0.5, 504, 1) == 1496 and consumo_100(6, 1, 504, 1) == 2993
+    try:
+        componentes_por_batida(0.3)
+        raise AssertionError("0,3 deveria ser recusado")
+    except ValueError:
+        pass
+
     # regra da folga: 138 é válido, 139 não (mesa de 139 cm)
     assert cm(138.0) <= LARGURA_MESA - MARGEM_SEGURANCA < cm(139.0)
-    print("Autoteste OK: fórmulas batem com a planilha (29, 134 e 47,31).")
+    print(
+        "Autoteste OK: fórmulas batem com a planilha (29, 134 e 47,31) e 0,5 par/batida funciona."
+    )
 
 
 if __name__ == "__main__":

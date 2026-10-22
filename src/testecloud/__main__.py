@@ -1,4 +1,4 @@
-from .divisao_tonalidades import resolver, imprimir
+from .claude.divisao_tonalidades import resolver, imprimir
 import json
 
 if __name__ == "__main__":
