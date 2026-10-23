@@ -27,7 +27,7 @@ alg = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(alg)
 
 COLS_DEMANDA = ("tamanho", "pares")
-COLS_NAV = ("componente", "tamanho", "largura", "comprimento", "pares")
+COLS_NAV = ("componente", "tamanho", "largura1", "comprimento1", "largura2", "comprimento2", "pares")
 COLS_TOM = ("tom", "metros")
 WORK_VERSION = 1
 
@@ -89,12 +89,12 @@ class TonalidadesApp(tk.Tk):
         self.tabs.add(self.nav_tab, text="Navalhas")
         self.tabs.add(self.stock_tab, text="Estoque do almoxarifado")
         self.demand_tree = self._make_table(self.demand_tab, COLS_DEMANDA, {"tamanho":"Tamanho", "pares":"Pares a produzir"}, {"tamanho":180, "pares":180})
-        self.nav_tree = self._make_table(self.nav_tab, COLS_NAV, {"componente":"Componente", "tamanho":"Tamanho", "largura":"Largura (cm)", "comprimento":"Comprimento (cm)", "pares":"Pares por batida"}, {"componente":190, "tamanho":100, "largura":150, "comprimento":170, "pares":150})
+        self.nav_tree = self._make_table(self.nav_tab, COLS_NAV, {"componente":"Componente", "tamanho":"Tamanho", "largura1":"Largura 1 (cm)", "comprimento1":"Comprimento 1 (cm)", "largura2":"Largura 2 (cm)", "comprimento2":"Comprimento 2 (cm)", "pares":"Pares por batida"}, {"componente":170, "tamanho":85, "largura1":115, "comprimento1":135, "largura2":115, "comprimento2":135, "pares":130})
         self.stock_tree = self._make_table(self.stock_tab, COLS_TOM, {"tom":"Tonalidade", "metros":"Estoque (m)"}, {"tom":220, "metros":220})
         self._table_controls(self.demand_tab, self.demand_tree, "tamanho")
         self._table_controls(self.nav_tab, self.nav_tree, "componente")
         self._table_controls(self.stock_tab, self.stock_tree, "tom")
-        ttk.Label(self.nav_tab, text="Edite largura, comprimento e pares por batida. Cada componente/tamanho deve ter uma navalha cadastrada. O algoritmo atual combina até dois tamanhos por campanha.", style="Hint.TLabel", wraplength=1000).pack(anchor="w", pady=(8, 0))
+        ttk.Label(self.nav_tab, text="Informe Largura 1 e Comprimento 1. Para encaixe transversal, preencha também Largura 2 (menor ou igual à Largura 1) em todos os tamanhos daquele componente. Comprimento 2 é opcional e só deve ser preenchido quando o modelo longitudinal de encaixe for aplicável. Cada componente/tamanho precisa de uma navalha cadastrada.", style="Hint.TLabel", wraplength=1000).pack(anchor="w", pady=(8, 0))
 
         bottom = ttk.Frame(self, padding=(14, 8, 14, 14))
         bottom.pack(fill="x")
@@ -224,7 +224,7 @@ class TonalidadesApp(tk.Tk):
         # Uma linha ilustrativa por tabela, definida no próprio código.
         # O usuário deve substituir ou excluir os valores conforme seu corte.
         self.demand_tree.insert("", "end", values=("38", "20"))
-        self.nav_tree.insert("", "end", values=("gaspea_interna", "38", "25.0", "17.0", "1"))
+        self.nav_tree.insert("", "end", values=("gaspea_interna", "38", "25.0", "17.0", "", "", "1"))
         self.stock_tree.insert("", "end", values=("tom 1", "20"))
 
         self.width_var.set("139")
@@ -345,7 +345,8 @@ class TonalidadesApp(tk.Tk):
         for nav in config.get("navalhas", []):
             self.nav_tree.insert("", "end", values=(
                 nav.get("componente", ""), nav.get("tamanho", ""),
-                nav.get("largura_cm", ""), nav.get("comprimento_cm", ""),
+                nav.get("largura_cm", nav.get("largura1_cm", "")), nav.get("comprimento_cm", nav.get("comprimento1_cm", "")),
+                nav.get("largura2_cm", ""), nav.get("comprimento2_cm", ""),
                 nav.get("pares_por_batida", ""),
             ))
         for tone, meters in config.get("estoque_tons_metros", {}).items():
@@ -382,7 +383,7 @@ class TonalidadesApp(tk.Tk):
         navs = {}
         components = set()
         for row in self.nav_tree.get_children():
-            component, size, width, length, pairs = self.nav_tree.item(row, "values")
+            component, size, width1, length1, width2, length2, pairs = self.nav_tree.item(row, "values")
             component, size = str(component).strip(), str(size).strip()
             if not component or not size:
                 raise ValueError("Componente e tamanho são obrigatórios em cada navalha.")
@@ -391,13 +392,29 @@ class TonalidadesApp(tk.Tk):
             key = (component, size)
             if key in navs:
                 raise ValueError(f"Navalha duplicada: {component} / {size}")
-            w = self._number(width, f"largura {component}/{size}")
-            l = self._number(length, f"comprimento {component}/{size}")
+            w1 = self._number(width1, f"largura 1 {component}/{size}")
+            l1 = self._number(length1, f"comprimento 1 {component}/{size}")
             p = self._number(pairs, f"pares por batida {component}/{size}")
-            if min(w, l, p) <= 0:
-                raise ValueError(f"Largura, comprimento e pares devem ser positivos ({component}/{size}).")
-            navs[key] = (w, l, p)
+            w2_text = str(width2).strip()
+            l2_text = str(length2).strip()
+            w2 = self._number(w2_text, f"largura 2 {component}/{size}") if w2_text else None
+            l2 = self._number(l2_text, f"comprimento 2 {component}/{size}") if l2_text else None
+            if min(w1, l1, p) <= 0 or (w2 is not None and w2 <= 0) or (l2 is not None and l2 <= 0):
+                raise ValueError(f"As medidas preenchidas e os pares devem ser positivos ({component}/{size}).")
+            if w2 is not None and w2 > w1:
+                raise ValueError(f"A Largura 2 deve ser menor ou igual à Largura 1 ({component}/{size}).")
+            navs[key] = (w1, l1, w2, l2, p)
             components.add(component)
+
+        # O motor define o encaixe por componente; por isso todos os tamanhos
+        # de um componente devem usar duas larguras ou todos devem usar largura simples.
+        for component in components:
+            modes = {navs[(c, s)][2] is not None for (c, s) in navs if c == component}
+            if len(modes) > 1:
+                raise ValueError(
+                    f"O componente {component!r} mistura navalhas simples e com encaixe. "
+                    "Preencha Largura 2 para todos os tamanhos desse componente, ou deixe-a vazia em todos."
+                )
         if len(components) < 1:
             raise ValueError("Cadastre navalhas para os tamanhos solicitados.")
         missing = [(c, s) for c in components for s in demand if (c, s) not in navs]
@@ -443,8 +460,14 @@ class TonalidadesApp(tk.Tk):
         return {
             "demanda": demand,
             "navalhas": [
-                {"componente": c, "tamanho": s, "largura_cm": w, "comprimento_cm": l, "pares_por_batida": p}
-                for (c, s), (w, l, p) in navs.items()
+                {
+                    "componente": c, "tamanho": s,
+                    "largura_cm": w1, "comprimento_cm": l1,
+                    "largura2_cm": w2, "comprimento2_cm": l2,
+                    "encaixe": w2 is not None,
+                    "pares_por_batida": p,
+                }
+                for (c, s), (w1, l1, w2, l2, p) in navs.items()
             ],
             "estoque_tons_metros": tones,
             "largura_mesa_cm": width,
@@ -555,13 +578,14 @@ class TonalidadesApp(tk.Tk):
             ws_inicial = wb.active
             ws_inicial.title = "Base_Navalhas"
             ws_base = ws_inicial
-            ws_base.append(["Componente", "Tamanho", "Largura (cm)"])
+            ws_base.append(["Componente", "Tamanho", "Largura 1 (cm)", "Largura 2 (cm)"])
             navalhas_config = (self.last_config or {}).get("navalhas", [])
             for navalha in navalhas_config:
                 ws_base.append([
                     str(navalha.get("componente", "")),
                     str(navalha.get("tamanho", "")),
                     float(navalha.get("largura_cm", 0)),
+                    float(navalha.get("largura2_cm") if navalha.get("largura2_cm") not in (None, "") else navalha.get("largura_cm", 0)),
                 ])
             ws_base.sheet_state = "hidden"
             # Solicita ao Excel recalcular as fórmulas ao abrir o arquivo.
@@ -582,7 +606,8 @@ class TonalidadesApp(tk.Tk):
             base_last_row = max(2, ws_base.max_row)
             base_component_range = f"'Base_Navalhas'!$A$2:$A${base_last_row}"
             base_size_range = f"'Base_Navalhas'!$B$2:$B${base_last_row}"
-            base_width_range = f"'Base_Navalhas'!$C$2:$C${base_last_row}"
+            base_width1_range = f"'Base_Navalhas'!$C$2:$C${base_last_row}"
+            base_width2_range = f"'Base_Navalhas'!$D$2:$D${base_last_row}"
 
             sheet_count = 0
             for tone, tone_data in self.result.get("tons", {}).items():
@@ -655,11 +680,14 @@ class TonalidadesApp(tk.Tk):
                             size_cells = [get_column_letter(3 + slot * 3) + str(row_idx) for slot in range(max_slots)]
                             terms = []
                             component_criteria = str(component).replace('"', '""')
-                            for count_cell, size_cell in zip(count_cells, size_cells):
-                                terms.append(
-                                    f'{count_cell}*SUMIFS({base_width_range},{base_component_range},"{component_criteria}",'
-                                    f'{base_size_range},{size_cell})'
-                                )
+                            for slot, (count_cell, size_cell) in enumerate(zip(count_cells, size_cells)):
+                                pos_cell = get_column_letter(4 + slot * 3) + str(row_idx)
+                                lookup_criteria = f'{base_component_range},"{component_criteria}",{base_size_range},{size_cell}'
+                                width2 = f'SUMIFS({base_width2_range},{lookup_criteria})'
+                                width1 = f'SUMIFS({base_width1_range},{lookup_criteria})'
+                                # Cada navalha contribui com Largura 2; somente a navalha
+                                # na posição L recebe o ajuste (Largura 1 - Largura 2).
+                                terms.append(f'{count_cell}*{width2}+IF({pos_cell}="L",{width1}-{width2},0)')
                             total_count = ",".join(count_cells)
                             width_formula = (
                                 f'=IF(COUNTA({total_count})=0,"",'
@@ -678,19 +706,26 @@ class TonalidadesApp(tk.Tk):
                             ws.cell(row_idx, col_count).number_format = "0.0"
                             counts_for_note = stage.get("contagem", {})
                             nav_widths = {
-                                str(n.get("tamanho", "")): float(n.get("largura_cm", 0))
+                                str(n.get("tamanho", "")): (
+                                    float(n.get("largura_cm", 0)),
+                                    float(n.get("largura2_cm") if n.get("largura2_cm") not in (None, "") else n.get("largura_cm", 0)),
+                                )
                                 for n in navalhas_config
                                 if str(n.get("componente", "")) == str(component)
                             }
-                            width_terms = [
-                                f"{count} × {nav_widths.get(str(size), 0):g} cm"
-                                for size, count in counts_for_note.items()
-                            ]
+                            left_size = stage.get("posicao_esquerda")
+                            width_terms = []
+                            for size, count in counts_for_note.items():
+                                w1, w2 = nav_widths.get(str(size), (0, 0))
+                                term = f"{count} × {w2:g} cm (Largura 2)"
+                                if left_size is not None and str(size) == str(left_size):
+                                    term += f" + ({w1:g} - {w2:g}) cm de ajuste da posição esquerda"
+                                width_terms.append(term)
                             total_knives = sum(float(v) for v in counts_for_note.values())
                             width_expression = " + ".join(width_terms) or "0"
                             width_expression += f" + ({total_knives:g} - 1) × {gap_cm:g} cm de folga"
                             ws.cell(row_idx, col_count).comment = Comment(
-                                "Fórmula Excel: soma(qtd. navalhas × largura da navalha) + "
+                                "Fórmula Excel: soma(qtd. navalhas × Largura 2) + ajuste (Largura 1 - Largura 2) da navalha na posição L + "
                                 "(quantidade total de navalhas - 1) × folga.\n"
                                 f"Exemplo deste padrão: {width_expression}\n"
                                 f"Largura calculada pelo otimizador: {float(stage.get('largura_cm', 0)):.2f} cm\n"

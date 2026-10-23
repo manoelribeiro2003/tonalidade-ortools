@@ -20,7 +20,7 @@ INSTALAÇÃO (Windows / CMD ou PowerShell)
 
 COMO USAR
 - Demanda por tamanho: informe tamanho e quantidade de pares.
-- Navalhas: informe componente, tamanho, largura, comprimento e pares por batida. Cada componente/tamanho solicitado precisa ter uma navalha cadastrada.
+- Navalhas: informe componente, tamanho, Largura 1, Comprimento 1 e pares por batida. Para encaixe transversal, preencha também Largura 2 (menor ou igual à Largura 1) para todos os tamanhos daquele componente. Comprimento 2 é opcional e só deve ser preenchido quando o modelo longitudinal de encaixe for aplicável. Cada componente/tamanho solicitado precisa ter uma navalha cadastrada.
 - Estoque do almoxarifado: informe cada tonalidade e seu estoque em metros.
 - Parâmetros de corte: ajuste largura da mesa, margem, perda por trocas, folga entre navalhas e acréscimos de comprimento.
 - Dê duplo clique em uma célula para editar. Use Adicionar linha e Excluir selecionada(s) para alterar as tabelas.
@@ -29,10 +29,11 @@ COMO USAR
 - Salvar trabalho grava em um único arquivo JSON os dados de entrada, parâmetros, configuração exata usada na otimização e o resultado (quando disponível).
 - Restaurar trabalho permite selecionar um arquivo salvo. Se houver resultado, a interface restaura a configuração que produziu aquele resultado.
 - Exportar resultado JSON salva somente o resultado retornado pelo otimizador.
-- Exportar planilha Excel cria a sequência de corte por tonalidade e componente, com colunas BAT., NÚM., POS. e MED. A coluna MED. contém uma fórmula Excel que calcula a soma (quantidade de navalhas × largura cadastrada) + (quantidade total de navalhas - 1) × folga entre navalhas. A base de larguras fica em uma aba auxiliar oculta; o comentário da célula MED. mostra a fórmula geral e a conta específica do padrão. As repetições longitudinais e o comprimento por padrão ficam no comentário da célula da sequência.
+- Exportar planilha Excel cria a sequência de corte por tonalidade e componente, com colunas BAT., NÚM., POS. e MED. A coluna MED. contém uma fórmula Excel que reproduz a geometria do otimizador: em encaixe, soma (quantidade × Largura 2) e adiciona (Largura 1 - Largura 2) para a navalha na posição L; depois soma (quantidade total - 1) × folga. Sem encaixe, Largura 2 equivale à Largura 1. A base de larguras fica em uma aba auxiliar oculta; o comentário da célula MED. mostra a fórmula geral e a conta específica do padrão. As repetições longitudinais e o comprimento por padrão ficam no comentário da célula da sequência.
 
 OBSERVAÇÕES
-- O algoritmo atual considera os componentes gaspea_interna e gaspea_externa (ou outros nomes cadastrados na tabela), não possui encaixe geométrico de navalhas e combina no máximo dois tamanhos por campanha.
+- O motor de otimização suporta encaixe transversal com Largura 1/Largura 2 e, separadamente, cálculo longitudinal com Comprimento 1/Comprimento 2. O encaixe transversal é ativado automaticamente quando Largura 2 está preenchida em todas as navalhas de um componente.
+- O algoritmo considera os componentes gaspea_interna e gaspea_externa (ou outros nomes cadastrados na tabela) e combina no máximo dois tamanhos por fileira/campanha.
 - O percentual de perda por trocas deve ser um número inteiro, como 1 ou 2.
 - Os pares por batida precisam ser múltiplos de 0,5, conforme a validação do algoritmo.
 - O estoque de cada tonalidade é compartilhado entre os componentes e cada tamanho recebe uma única tonalidade para os dois componentes.
